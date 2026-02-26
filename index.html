@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Configuratore Anteprime Siti Web</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --black: #08080e;
+  --dark: #0e0e18;
+  --card: #13131f;
+  --card2: #191926;
+  --border: rgba(255,255,255,0.07);
+  --text: #ededf5;
+  --muted: #5f5f78;
+  --accent: #4f7dff;
+  --accent-dim: rgba(79,125,255,0.12);
+  --green: #22c55e;
+}
+
+html { scroll-behavior: smooth; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--black); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.1rem 3rem;
+  background: rgba(8,8,14,0.9);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo { font-weight: 800; font-size: 1.25rem; letter-spacing: -0.03em; }
+.nav-logo span { color: var(--accent); }
+.nav-cta {
+  background: var(--accent); color: white; border: none;
+  padding: 0.6rem 1.4rem; border-radius: 8px;
+  font-family: inherit; font-size: 0.875rem; font-weight: 600;
+  cursor: pointer; text-decoration: none;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.nav-cta:hover { opacity: 0.85; transform: translateY(-1px); }
+
+/* ── HERO ── */
+.hero {
+  text-align: center; padding: 5.5rem 2rem 4rem;
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
+  width: 800px; height: 600px;
+  background: radial-gradient(ellipse, rgba(79,125,255,0.1) 0%, transparent 68%);
+  pointer-events: none;
+}
+.hero-pill {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: var(--accent-dim);
+  border: 1px solid rgba(79,125,255,0.22);
+  color: var(--accent);
+  padding: 0.35rem 1rem; border-radius: 100px;
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; margin-bottom: 1.8rem;
+}
+.hero h1 {
+  font-size: clamp(2.2rem, 5.5vw, 3.8rem);
+  font-weight: 800; line-height: 1.08; letter-spacing: -0.04em;
+  margin-bottom: 1.2rem;
+}
+.hero h1 em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--accent) 20%, #a78bfa 80%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero p { font-size: 1.05rem; color: var(--muted); max-width: 560px; margin: 0 auto; line-height: 1.75; }
+
+/* ── STEPS ── */
+.steps {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; margin: 3rem auto 0; max-width: 680px;
+}
+.step { display: flex; align-items: center; gap: 0.6rem; }
+.step-num {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--accent-dim); border: 1px solid rgba(79,125,255,0.3);
+  color: var(--accent); font-size: 0.75rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.step-label { font-size: 0.82rem; color: var(--muted); font-weight: 500; white-space: nowrap; }
+.step-arrow { color: var(--border); margin: 0 0.8rem; font-size: 0.9rem; }
+
+/* ── MAIN CARD ── */
+.main-wrap { max-width: 960px; margin: 0 auto; padding: 0 1.5rem 6rem; }
+
+.config-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2.5rem 2.5rem 2rem;
+  position: relative; overflow: hidden;
+}
+.config-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), #a78bfa, transparent);
+}
+
+.config-label {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--muted);
+  display: block; margin-bottom: 0.8rem;
+}
+
+/* ── SELECT ── */
+.select-wrap { position: relative; }
+.select-wrap::after {
+  content: '▾'; position: absolute; right: 1.1rem; top: 50%;
+  transform: translateY(-50%); color: var(--muted); pointer-events: none;
+}
+select {
+  width: 100%; appearance: none;
+  background: rgba(255,255,255,0.04);
+  border: 1.5px solid rgba(255,255,255,0.09);
+  border-radius: 12px;
+  padding: 1rem 2.5rem 1rem 1.2rem;
+  color: var(--text);
+  font-family: inherit; font-size: 1rem; font-weight: 500;
+  cursor: pointer; outline: none; transition: border-color 0.2s;
+}
+select:focus { border-color: var(--accent); }
+select option { background: #13131f; color: var(--text); }
+optgroup { color: var(--muted); }
+
+/* ── PREVIEW PANEL ── */
+.preview-panel {
+  margin-top: 2rem;
+  opacity: 0; transform: translateY(14px);
+  transition: opacity 0.45s cubic-bezier(0.34,1.2,0.64,1), transform 0.45s cubic-bezier(0.34,1.2,0.64,1);
+  pointer-events: none;
+}
+.preview-panel.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+.preview-top {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 1rem; flex-wrap: wrap; gap: 0.8rem;
+}
+.preview-title { font-size: 1rem; font-weight: 700; }
+.preview-title span { color: var(--accent); }
+
+.preview-meta { display: flex; align-items: center; gap: 0.6rem; }
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+.live-label { font-size: 0.75rem; color: var(--green); font-weight: 600; letter-spacing: 0.06em; }
+
+/* browser chrome */
+.browser {
+  background: #1c1c2a; border-radius: 14px 14px 0 0;
+  border: 1px solid var(--border); border-bottom: none;
+  padding: 0.75rem 1rem;
+  display: flex; align-items: center; gap: 0.8rem;
+}
+.b-dots { display: flex; gap: 5px; }
+.b-dot { width: 11px; height: 11px; border-radius: 50%; }
+.b-dot:nth-child(1) { background: #ff5f56; }
+.b-dot:nth-child(2) { background: #ffbd2e; }
+.b-dot:nth-child(3) { background: #27c93f; }
+.b-url {
+  flex: 1; background: rgba(255,255,255,0.05); border-radius: 6px;
+  padding: 0.32rem 0.8rem; font-size: 0.75rem; color: var(--muted);
+  font-family: monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.b-reload { color: var(--muted); cursor: pointer; font-size: 0.9rem; transition: color 0.2s; }
+.b-reload:hover { color: var(--text); }
+
+/* iframe */
+.iframe-wrap {
+  position: relative; width: 100%; height: 580px;
+  border: 1px solid var(--border); border-radius: 0 0 14px 14px;
+  overflow: hidden; background: #fff;
+}
+iframe { width: 100%; height: 100%; border: none; display: block; }
+
+/* loading */
+.iframe-loader {
+  position: absolute; inset: 0;
+  background: #0e0e18;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;
+  transition: opacity 0.4s;
+}
+.iframe-loader.hide { opacity: 0; pointer-events: none; }
+.spinner { width: 36px; height: 36px; border: 3px solid rgba(79,125,255,0.2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loader-text { font-size: 0.85rem; color: var(--muted); }
+
+/* device bar */
+.device-bar { display: flex; gap: 0.4rem; }
+.dev-btn {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--muted); border-radius: 7px; padding: 0.35rem 0.65rem;
+  cursor: pointer; font-size: 0.85rem; transition: all 0.2s;
+}
+.dev-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+/* action row */
+.action-row { display: flex; align-items: center; gap: 0.8rem; margin-top: 1rem; flex-wrap: wrap; }
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  background: var(--accent); color: white; border: none;
+  padding: 0.75rem 1.6rem; border-radius: 9px;
+  font-family: inherit; font-size: 0.875rem; font-weight: 700;
+  cursor: pointer; text-decoration: none;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  background: transparent; color: var(--text);
+  border: 1px solid var(--border); padding: 0.75rem 1.6rem; border-radius: 9px;
+  font-family: inherit; font-size: 0.875rem; font-weight: 600;
+  cursor: pointer; text-decoration: none;
+  transition: border-color 0.2s, color 0.2s;
+}
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+/* no-url notice */
+.notice {
+  display: none; margin-top: 0.8rem;
+  padding: 0.9rem 1.2rem; background: rgba(255,189,46,0.07);
+  border: 1px solid rgba(255,189,46,0.2); border-radius: 10px;
+  font-size: 0.85rem; color: rgba(255,189,46,0.8);
+  display: flex; align-items: center; gap: 0.6rem;
+}
+
+/* ── FORM ── */
+.form-section { background: var(--dark); padding: 6rem 2rem; border-top: 1px solid var(--border); }
+.form-inner { max-width: 700px; margin: 0 auto; }
+.form-inner h2 {
+  font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+  font-weight: 800; letter-spacing: -0.035em;
+  margin-bottom: 0.6rem;
+}
+.form-inner > p { color: var(--muted); font-size: 1rem; margin-bottom: 3rem; line-height: 1.7; }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.form-grid .full { grid-column: 1/-1; }
+.fg { display: flex; flex-direction: column; gap: 0.4rem; }
+.fg label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.fg input, .fg select, .fg textarea {
+  background: rgba(255,255,255,0.04); border: 1.5px solid rgba(255,255,255,0.08);
+  border-radius: 10px; padding: 0.85rem 1rem;
+  color: var(--text); font-family: inherit; font-size: 0.9rem;
+  outline: none; transition: border-color 0.2s; width: 100%;
+}
+.fg input:focus, .fg select:focus, .fg textarea:focus { border-color: var(--accent); }
+.fg textarea { min-height: 110px; resize: vertical; }
+.fg select { appearance: none; cursor: pointer; }
+.fg select option { background: #13131f; }
+
+.form-submit {
+  width: 100%; background: var(--accent); color: white; border: none;
+  padding: 1rem; border-radius: 12px;
+  font-family: inherit; font-size: 1rem; font-weight: 700;
+  cursor: pointer; margin-top: 0.5rem;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.form-submit:hover { opacity: 0.88; transform: translateY(-1px); }
+.form-note { font-size: 0.75rem; color: var(--muted); text-align: center; margin-top: 0.8rem; }
+
+.success { display: none; text-align: center; padding: 4rem 2rem; }
+.success.show { display: block; }
+.success-icon { font-size: 4rem; margin-bottom: 1rem; }
+.success h3 { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.5rem; }
+.success p { color: var(--muted); }
+
+/* ── FOOTER ── */
+footer { text-align: center; padding: 2rem; color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--border); }
+footer a { color: var(--muted); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 650px) {
+  nav { padding: 1rem 1.5rem; }
+  .config-card { padding: 1.5rem; }
+  .form-grid { grid-template-columns: 1fr; }
+  .form-grid .full { grid-column: 1; }
+  .iframe-wrap { height: 420px; }
+  .steps { display: none; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">site<span>craft</span></div>
+  <a href="#richiedi" class="nav-cta">Richiedi il tuo sito</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-pill">✦ Configuratore anteprime</div>
+  <h1>Scegli. Visualizza.<br><em>Realizza.</em></h1>
+  <p>Seleziona la tua categoria e guarda subito un'anteprima reale del sito. Niente preventivi alla cieca — sai esattamente cosa ti aspetta.</p>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-label">Scegli la categoria</div></div>
+    <div class="step-arrow">→</div>
+    <div class="step"><div class="step-num">2</div><div class="step-label">Vedi l'anteprima</div></div>
+    <div class="step-arrow">→</div>
+    <div class="step"><div class="step-num">3</div><div class="step-label">Richiedi il tuo sito</div></div>
+  </div>
+</section>
+
+<!-- CONFIG -->
+<div class="main-wrap">
+  <div class="config-card">
+    <label class="config-label" for="cat">Seleziona il tipo di attività:</label>
+    <div class="select-wrap">
+      <select id="cat">
+        <option value="">— Scegli la tua categoria —</option>
+        <optgroup label="🍽 Food & Hospitality">
+          <option value="ristorante" data-label="Ristorante / Food" data-demo="demo-ristorante.html" data-url="demo-ristorante.html">Ristorante / Food</option>
+          <option value="bar" data-label="Bar e Caffè" data-demo="" data-url="">Bar e Caffè</option>
+          <option value="bb" data-label="Case vacanza / B&B" data-demo="" data-url="">Case vacanza / B&B</option>
+          <option value="wine" data-label="Wine Boutique / Enoteca" data-demo="" data-url="">Wine Boutique / Enoteca</option>
+        </optgroup>
+        <optgroup label="💇 Benessere & Bellezza">
+          <option value="parrucchiere" data-label="Parrucchieri / Barber Shop" data-demo="" data-url="">Parrucchieri e Barber Shop</option>
+          <option value="spa" data-label="Centri Estetici / SPA" data-demo="" data-url="">Centri estetici / SPA</option>
+          <option value="salone" data-label="Salone di Bellezza" data-demo="" data-url="">Salone di bellezza</option>
+          <option value="palestra" data-label="Palestre / Centri Fitness" data-demo="" data-url="">Palestre / Centri Fitness</option>
+        </optgroup>
+        <optgroup label="👔 Professionisti">
+          <option value="avvocato" data-label="Avvocati / Studi Legali" data-demo="" data-url="">Avvocati / Studi legali</option>
+          <option value="dentista" data-label="Studio Dentistico" data-demo="" data-url="">Studio Dentistico</option>
+          <option value="fisio" data-label="Fisioterapista / Osteopata" data-demo="" data-url="">Fisioterapista / Osteopata</option>
+          <option value="psicologo" data-label="Psicologo / Psicoterapeuta" data-demo="" data-url="">Psicologo / Psicoterapeuta</option>
+          <option value="nutri" data-label="Nutrizionista / Salute" data-demo="" data-url="">Nutrizionista / Salute</option>
+        </optgroup>
+        <optgroup label="💼 Business & Creativi">
+          <option value="agenzia" data-label="Digital Agency" data-demo="" data-url="">Digital Agency</option>
+          <option value="consulenza" data-label="Consulenza / Business" data-demo="" data-url="">Consulenza / Business</option>
+          <option value="fotografo" data-label="Fotografo" data-demo="" data-url="">Fotografo</option>
+          <option value="designer" data-label="Graphic Designer" data-demo="" data-url="">Graphic Designer</option>
+          <option value="freelancer" data-label="Freelancer / Libero Professionista" data-demo="" data-url="">Freelancer / Libero Professionista</option>
+          <option value="startup" data-label="Startup / Innovazione" data-demo="" data-url="">Startup / Innovazione</option>
+        </optgroup>
+        <optgroup label="🛍 Negozi & Commercio">
+          <option value="abbigliamento" data-label="Negozi di Abbigliamento" data-demo="" data-url="">Negozi di abbigliamento</option>
+          <option value="petshop" data-label="Servizi per Animali / Petshop" data-demo="" data-url="">Servizi per animali / Petshop</option>
+          <option value="meccanico" data-label="Meccanici / Officine" data-demo="" data-url="">Meccanici / Officine</option>
+          <option value="immobiliare" data-label="Agenzie Immobiliari" data-demo="" data-url="">Agenzie immobiliari</option>
+        </optgroup>
+        <optgroup label="📚 Istruzione & Altro">
+          <option value="scuola" data-label="Scuole / Istituti Formativi" data-demo="" data-url="">Scuole e Istituti formativi</option>
+          <option value="wedding" data-label="Wedding Planner / Eventi" data-demo="" data-url="">Wedding Planner / Eventi</option>
+          <option value="blog" data-label="Blog Personale / Magazine" data-demo="" data-url="">Blog Personale / Magazine</option>
+        </optgroup>
+      </select>
+    </div>
+
+    <!-- PREVIEW PANEL -->
+    <div class="preview-panel" id="preview-panel">
+
+      <div class="preview-top">
+        <div>
+          <div style="font-size:0.7rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.3rem">Anteprima</div>
+          <div class="preview-title" id="preview-title">Sito per <span>—</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+          <div class="device-bar">
+            <button class="dev-btn active" data-w="100%">🖥</button>
+            <button class="dev-btn" data-w="768px">📱</button>
+            <button class="dev-btn" data-w="390px">📲</button>
+          </div>
+          <div class="preview-meta">
+            <div class="live-dot"></div>
+            <span class="live-label">Live Preview</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="browser">
+        <div class="b-dots">
+          <div class="b-dot"></div><div class="b-dot"></div><div class="b-dot"></div>
+        </div>
+        <div class="b-url" id="b-url">—</div>
+        <div class="b-reload" onclick="reloadIframe()" title="Ricarica">↻</div>
+      </div>
+
+      <div class="iframe-wrap" id="iframe-wrap">
+        <div class="iframe-loader" id="loader">
+          <div class="spinner"></div>
+          <div class="loader-text">Caricamento anteprima...</div>
+        </div>
+        <iframe id="preview-iframe" title="Anteprima"></iframe>
+      </div>
+
+      <div class="notice" id="notice">
+        🚧 Anteprima di questa categoria in arrivo. Compila il form e ti invieremo un mockup personalizzato!
+      </div>
+
+      <div class="action-row">
+        <a id="btn-open" href="#" target="_blank" class="btn-primary" style="display:none">↗ Apri in nuova scheda</a>
+        <a href="#richiedi" class="btn-ghost">✦ Richiedi questo sito</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- FORM -->
+<section class="form-section" id="richiedi">
+  <div class="form-inner">
+    <h2>Ti piace? Rendila tua.</h2>
+    <p>Compila il modulo e ti contatteremo entro 24 ore con un preventivo gratuito e personalizzato in base alle tue esigenze.</p>
+
+    <div id="form-body">
+      <div class="form-grid">
+        <div class="fg"><label>Nome *</label><input type="text" id="f-nome" placeholder="Mario"></div>
+        <div class="fg"><label>Cognome *</label><input type="text" id="f-cognome" placeholder="Rossi"></div>
+        <div class="fg"><label>Email *</label><input type="email" id="f-email" placeholder="mario@esempio.it"></div>
+        <div class="fg"><label>Telefono</label><input type="tel" id="f-tel" placeholder="+39 333 123 4567"></div>
+        <div class="fg full">
+          <label>Tipo di sito *</label>
+          <div class="select-wrap">
+            <select id="f-tipo">
+              <option value="">— Seleziona —</option>
+              <option>Ristorante / Food</option>
+              <option>Bar e Caffè</option>
+              <option>Case vacanza / B&B</option>
+              <option>Wine Boutique / Enoteca</option>
+              <option>Parrucchieri / Barber Shop</option>
+              <option>Centri estetici / SPA</option>
+              <option>Salone di bellezza</option>
+              <option>Palestre / Centri Fitness</option>
+              <option>Avvocati / Studi legali</option>
+              <option>Studio Dentistico</option>
+              <option>Fisioterapista / Osteopata</option>
+              <option>Psicologo / Psicoterapeuta</option>
+              <option>Nutrizionista / Salute</option>
+              <option>Digital Agency</option>
+              <option>Consulenza / Business</option>
+              <option>Fotografo</option>
+              <option>Graphic Designer</option>
+              <option>Freelancer / Libero Professionista</option>
+              <option>Startup / Innovazione</option>
+              <option>Negozi di abbigliamento</option>
+              <option>Servizi per animali / Petshop</option>
+              <option>Meccanici / Officine</option>
+              <option>Agenzie immobiliari</option>
+              <option>Scuole / Istituti Formativi</option>
+              <option>Wedding Planner / Eventi</option>
+              <option>Blog Personale / Magazine</option>
+              <option>Altro</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg full">
+          <label>Messaggio</label>
+          <textarea id="f-msg" placeholder="Raccontaci la tua attività e cosa vorresti nel sito..."></textarea>
+        </div>
+      </div>
+      <button class="form-submit" onclick="handleSubmit()">Richiedi il tuo sito gratuito ✦</button>
+      <p class="form-note">🔒 Nessuno spam. Ti contatteremo solo per il tuo progetto.</p>
+    </div>
+
+    <div class="success" id="success">
+      <div class="success-icon">🚀</div>
+      <h3>Richiesta inviata!</h3>
+      <p>Grazie! Ti contatteremo entro 24 ore con il tuo preventivo su misura.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  © 2025 sitecraft — Tutti i diritti riservati &nbsp;·&nbsp; <a href="#">Privacy Policy</a>
+</footer>
+
+<script>
+const catSel = document.getElementById('cat');
+const panel = document.getElementById('preview-panel');
+const titleEl = document.getElementById('preview-title');
+const bUrl = document.getElementById('b-url');
+const iframe = document.getElementById('preview-iframe');
+const loader = document.getElementById('loader');
+const notice = document.getElementById('notice');
+const btnOpen = document.getElementById('btn-open');
+const iframeWrap = document.getElementById('iframe-wrap');
+const formSel = document.getElementById('f-tipo');
+
+let currentUrl = '';
+
+catSel.addEventListener('change', () => {
+  const opt = catSel.options[catSel.selectedIndex];
+  if (!opt.value) { panel.classList.remove('visible'); return; }
+
+  const label = opt.dataset.label || opt.text;
+  const demoUrl = opt.dataset.demo || '';
+
+  // Update title
+  titleEl.innerHTML = `Sito per <span>${label}</span>`;
+
+  // Sync form select
+  const match = [...formSel.options].find(o => o.text === opt.text);
+  if (match) formSel.value = match.value;
+
+  panel.classList.add('visible');
+
+  if (demoUrl) {
+    notice.style.display = 'none';
+    btnOpen.style.display = 'inline-flex';
+    btnOpen.href = demoUrl;
+    bUrl.textContent = demoUrl;
+    currentUrl = demoUrl;
+    loadIframe(demoUrl);
+  } else {
+    notice.style.display = 'flex';
+    btnOpen.style.display = 'none';
+    currentUrl = '';
+    bUrl.textContent = 'www.tuosito.it/' + opt.value + '/';
+    buildPlaceholder(label, opt.value);
+  }
+});
+
+function loadIframe(url) {
+  loader.classList.remove('hide');
+  iframe.src = '';
+  setTimeout(() => {
+    iframe.src = url;
+  }, 100);
+
+  iframe.onload = () => { loader.classList.add('hide'); };
+
+  // Fallback timeout
+  setTimeout(() => { loader.classList.add('hide'); }, 4000);
+}
+
+function reloadIframe() {
+  if (currentUrl) loadIframe(currentUrl);
+}
+
+function buildPlaceholder(label, type) {
+  const themes = {
+    bar: '#d97706', bb: '#4338ca', wine: '#9d174d',
+    parrucchiere: '#7c3aed', spa: '#059669', salone: '#e11d48', palestra: '#ea580c',
+    avvocato: '#0f172a', dentista: '#1d4ed8', fisio: '#16a34a', psicologo: '#7c3aed', nutri: '#4d7c0f',
+    agenzia: '#4f7dff', consulenza: '#0369a1', fotografo: '#111', designer: '#ff6b35',
+    freelancer: '#6366f1', startup: '#22d3ee', abbigliamento: '#111', petshop: '#f59e0b',
+    meccanico: '#ef4444', immobiliare: '#0f766e', scuola: '#2563eb', wedding: '#db2777', blog: '#111827'
+  };
+  const emojis = { bar:'☕',bb:'🏡',wine:'🍷',parrucchiere:'✂️',spa:'🌿',salone:'💅',palestra:'💪',avvocato:'⚖️',dentista:'🦷',fisio:'🏃',psicologo:'🧠',nutri:'🥗',agenzia:'🚀',consulenza:'📊',fotografo:'📷',designer:'🎨',freelancer:'💼',startup:'💡',abbigliamento:'👗',petshop:'🐾',meccanico:'🔧',immobiliare:'🏠',scuola:'📚',wedding:'💍',blog:'✍️' };
+  const color = themes[type] || '#4f7dff';
+  const emoji = emojis[type] || '🌐';
+
+  const html = `<html><head><style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:system-ui,sans-serif;background:#f8f8f8;display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:1.5rem;color:#333;text-align:center;padding:2rem}
+    .circle{width:120px;height:120px;border-radius:50%;background:${color}18;border:2px dashed ${color}44;display:flex;align-items:center;justify-content:center;font-size:3.5rem}
+    h2{font-size:1.6rem;font-weight:800;color:#111}
+    p{font-size:0.9rem;color:#888;max-width:320px;line-height:1.6}
+    .badge{background:${color};color:white;padding:0.4rem 1rem;border-radius:100px;font-size:0.75rem;font-weight:700;letter-spacing:0.08em}
+  </style></head><body>
+    <div class="circle">${emoji}</div>
+    <div class="badge">${label}</div>
+    <h2>Anteprima in arrivo</h2>
+    <p>Stiamo preparando la demo per <strong>${label}</strong>. Compila il form per ricevere un mockup personalizzato!</p>
+  </body></html>`;
+
+  loader.classList.add('hide');
+  const blob = new Blob([html], { type: 'text/html' });
+  iframe.src = URL.createObjectURL(blob);
+}
+
+// Device switcher
+document.querySelectorAll('.dev-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.dev-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    iframeWrap.style.maxWidth = btn.dataset.w;
+    iframeWrap.style.margin = btn.dataset.w === '100%' ? '0' : '0 auto';
+  });
+});
+
+// Form submit
+function handleSubmit() {
+  const nome = document.getElementById('f-nome').value.trim();
+  const email = document.getElementById('f-email').value.trim();
+  const tipo = document.getElementById('f-tipo').value;
+  if (!nome || !email || !tipo) {
+    alert('Compila almeno: nome, email e tipo di sito.');
+    return;
+  }
+  document.getElementById('form-body').style.display = 'none';
+  document.getElementById('success').classList.add('show');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ristorante La Terrazza — Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --gold: #b8860b;
+  --gold-light: #d4a843;
+  --dark: #1a0f05;
+  --dark2: #251507;
+  --cream: #faf6ef;
+  --cream2: #f2ebe0;
+  --text: #2d1f0e;
+  --muted: #7a6040;
+  --border: rgba(184,134,11,0.2);
+}
+
+html { scroll-behavior: smooth; }
+body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); overflow-x: hidden; }
+
+/* DEMO BADGE */
+.demo-badge {
+  position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999;
+  background: #0d0d12;
+  color: #fff;
+  padding: 0.7rem 1.3rem;
+  border-radius: 100px;
+  font-size: 0.8rem; font-weight: 600;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex; align-items: center; gap: 0.5rem;
+  text-decoration: none;
+  transition: transform 0.2s;
+}
+.demo-badge:hover { transform: scale(1.04); }
+.demo-badge span { color: #4f7dff; font-weight: 700; }
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.3rem 3rem;
+  transition: background 0.4s, padding 0.4s, box-shadow 0.4s;
+}
+nav.scrolled {
+  background: rgba(26,15,5,0.96);
+  backdrop-filter: blur(12px);
+  padding: 0.9rem 3rem;
+  box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+}
+.nav-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem; font-weight: 700;
+  color: white; letter-spacing: 0.02em;
+}
+.nav-logo em { color: var(--gold-light); font-style: normal; }
+.nav-links { display: flex; gap: 2rem; }
+.nav-links a { color: rgba(255,255,255,0.8); text-decoration: none; font-size: 0.875rem; font-weight: 500; letter-spacing: 0.04em; transition: color 0.2s; }
+.nav-links a:hover { color: var(--gold-light); }
+.nav-cta {
+  background: var(--gold); color: white;
+  padding: 0.6rem 1.4rem; border-radius: 4px;
+  text-decoration: none; font-size: 0.85rem; font-weight: 600;
+  letter-spacing: 0.05em; transition: background 0.2s;
+}
+.nav-cta:hover { background: var(--gold-light); }
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  position: relative;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+
+.hero-slides { position: absolute; inset: 0; }
+.hero-slide {
+  position: absolute; inset: 0;
+  opacity: 0; transition: opacity 1.2s ease;
+  background-size: cover; background-position: center;
+}
+.hero-slide.active { opacity: 1; }
+
+/* placeholder gradient slides */
+.slide-1 { background: linear-gradient(135deg, #1a0800 0%, #3d1a00 40%, #5c2a00 70%, #2d1000 100%); }
+.slide-2 { background: linear-gradient(135deg, #0d1a0a 0%, #1a3a14 40%, #2d5c20 70%, #152810 100%); }
+.slide-3 { background: linear-gradient(135deg, #1a0a14 0%, #3a0d28 40%, #5c1a3f 70%, #280a1c 100%); }
+
+.slide-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.52); }
+
+.hero-food-visual {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+}
+.food-circle {
+  width: 420px; height: 420px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, rgba(184,134,11,0.15), transparent 70%);
+  border: 1px solid rgba(184,134,11,0.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10rem;
+  animation: float 6s ease-in-out infinite;
+  opacity: 0.35;
+}
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-18px)} }
+
+.hero-content {
+  position: relative; z-index: 2;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  text-align: center;
+  flex: 1;
+  padding: 8rem 2rem 4rem;
+}
+
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  color: var(--gold-light);
+  font-size: 0.78rem; font-weight: 500; letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+.hero-eyebrow::before, .hero-eyebrow::after { content:''; width:30px; height:1px; background: var(--gold); }
+
+.hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(3rem, 7vw, 5.5rem);
+  font-weight: 900; line-height: 1.05;
+  color: white;
+  margin-bottom: 1.4rem;
+  letter-spacing: -0.01em;
+}
+.hero h1 em { color: var(--gold-light); font-style: italic; }
+
+.hero-sub {
+  font-size: 1.1rem; color: rgba(255,255,255,0.65);
+  max-width: 480px; line-height: 1.7;
+  margin-bottom: 2.5rem;
+}
+
+.hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+
+.btn-gold {
+  background: var(--gold); color: white;
+  padding: 0.9rem 2.2rem; border-radius: 4px;
+  text-decoration: none; font-size: 0.95rem; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  transition: background 0.2s, transform 0.15s;
+}
+.btn-gold:hover { background: var(--gold-light); transform: translateY(-2px); }
+
+.btn-outline-white {
+  border: 1.5px solid rgba(255,255,255,0.5); color: white;
+  padding: 0.9rem 2.2rem; border-radius: 4px;
+  text-decoration: none; font-size: 0.95rem; font-weight: 500;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  transition: border-color 0.2s, transform 0.15s;
+}
+.btn-outline-white:hover { border-color: var(--gold-light); color: var(--gold-light); transform: translateY(-2px); }
+
+.hero-indicators {
+  position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 0.5rem; z-index: 2;
+}
+.indicator {
+  width: 30px; height: 2px; background: rgba(255,255,255,0.3);
+  cursor: pointer; transition: background 0.3s, width 0.3s;
+}
+.indicator.active { background: var(--gold-light); width: 50px; }
+
+/* STRIP */
+.strip {
+  background: var(--dark);
+  padding: 1.2rem 3rem;
+  display: flex; align-items: center; justify-content: center;
+  gap: 3rem; flex-wrap: wrap;
+}
+.strip-item { color: rgba(255,255,255,0.65); font-size: 0.8rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; }
+.strip-dot { color: var(--gold); font-size: 0.5rem; }
+
+/* SECTION BASE */
+section { padding: 6rem 3rem; }
+.section-eyebrow {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  color: var(--gold);
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.2em;
+  text-transform: uppercase; margin-bottom: 1rem;
+}
+.section-eyebrow::before { content:''; width:24px; height:1px; background: var(--gold); }
+
+h2.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700; line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.8rem;
+}
+.section-sub { color: var(--muted); font-size: 1rem; line-height: 1.7; max-width: 540px; }
+
+/* CHI SIAMO */
+.about { background: var(--cream); }
+.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: center; max-width: 1100px; margin: 0 auto; }
+
+.about-visual {
+  position: relative;
+}
+.about-img-main {
+  width: 100%; aspect-ratio: 3/4;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #2d1a08 0%, #5c3518 50%, #3d2410 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 7rem;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+.about-img-small {
+  position: absolute; bottom: -2rem; right: -2rem;
+  width: 200px; aspect-ratio: 1;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #0d2d0d 0%, #1a5c1a 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 4rem;
+  border: 6px solid var(--cream);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+.about-badge {
+  position: absolute; top: 2rem; left: -1.5rem;
+  background: var(--gold); color: white;
+  padding: 1rem 1.2rem; border-radius: 4px;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(184,134,11,0.3);
+}
+.about-badge .num { font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 900; line-height: 1; }
+.about-badge .label { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.9; }
+
+.about-features { margin-top: 2rem; display: flex; flex-direction: column; gap: 1.2rem; }
+.about-feature { display: flex; gap: 1rem; align-items: flex-start; }
+.about-feature-icon { width: 42px; height: 42px; background: var(--gold)15; border: 1px solid var(--border); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+.about-feature-text h4 { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.2rem; }
+.about-feature-text p { font-size: 0.85rem; color: var(--muted); line-height: 1.5; }
+
+/* STATS */
+.stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 0; margin-top: 3rem; border: 1px solid var(--border); }
+.stat-item { padding: 2rem; text-align: center; border-right: 1px solid var(--border); }
+.stat-item:last-child { border-right: none; }
+.stat-num { font-family: 'Playfair Display', serif; font-size: 2.8rem; font-weight: 900; color: var(--gold); line-height: 1; margin-bottom: 0.3rem; }
+.stat-label { font-size: 0.75rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+
+/* MENU */
+.menu-section { background: var(--dark); }
+.menu-section .section-title { color: white; }
+.menu-section .section-sub { color: rgba(255,255,255,0.5); }
+.menu-inner { max-width: 1100px; margin: 0 auto; }
+
+.menu-tabs { display: flex; gap: 0; margin: 3rem 0 2.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.menu-tab {
+  padding: 0.8rem 1.8rem;
+  color: rgba(255,255,255,0.45);
+  cursor: pointer; font-size: 0.85rem; font-weight: 500;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px; transition: all 0.2s;
+}
+.menu-tab.active { color: var(--gold-light); border-bottom-color: var(--gold); }
+.menu-tab:hover { color: rgba(255,255,255,0.7); }
+
+.menu-grid {
+  display: grid; grid-template-columns: repeat(2,1fr);
+  gap: 0; border: 1px solid rgba(255,255,255,0.07);
+}
+.menu-item {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  border-right: 1px solid rgba(255,255,255,0.07);
+  display: flex; justify-content: space-between; align-items: flex-start;
+  transition: background 0.2s;
+}
+.menu-item:hover { background: rgba(255,255,255,0.03); }
+.menu-item:nth-child(even) { border-right: none; }
+.menu-item-left h4 { color: white; font-weight: 600; font-size: 1rem; margin-bottom: 0.3rem; }
+.menu-item-left p { color: rgba(255,255,255,0.4); font-size: 0.82rem; line-height: 1.5; max-width: 260px; }
+.menu-item-price { color: var(--gold-light); font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; white-space: nowrap; margin-left: 1rem; }
+
+.menu-panel { display: none; }
+.menu-panel.active { display: block; }
+
+/* GALLERIA */
+.gallery-section { background: var(--cream2); }
+.gallery-inner { max-width: 1100px; margin: 0 auto; }
+.gallery-grid {
+  margin-top: 3rem;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(2, 220px);
+  gap: 0.8rem;
+}
+.gallery-item {
+  border-radius: 4px; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 4rem;
+}
+.gallery-item:nth-child(1) { grid-column: 1/6; grid-row: 1/2; background: linear-gradient(135deg,#2d1a08,#5c3518); }
+.gallery-item:nth-child(2) { grid-column: 6/9; grid-row: 1/2; background: linear-gradient(135deg,#0d2d0d,#2a6020); }
+.gallery-item:nth-child(3) { grid-column: 9/13; grid-row: 1/3; background: linear-gradient(135deg,#1a1a2d,#3a3a6b); font-size: 6rem; }
+.gallery-item:nth-child(4) { grid-column: 1/5; grid-row: 2/3; background: linear-gradient(135deg,#2d1a1a,#5c3030); }
+.gallery-item:nth-child(5) { grid-column: 5/9; grid-row: 2/3; background: linear-gradient(135deg,#1a2d1a,#305c30); }
+
+/* RECENSIONI */
+.reviews-section { background: var(--cream); }
+.reviews-inner { max-width: 1100px; margin: 0 auto; }
+.reviews-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; margin-top: 3rem; }
+.review-card {
+  background: white;
+  padding: 2rem; border-radius: 4px;
+  border: 1px solid rgba(0,0,0,0.07);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  position: relative;
+}
+.review-stars { color: var(--gold); font-size: 0.9rem; margin-bottom: 1rem; letter-spacing: 0.1em; }
+.review-text { font-size: 0.9rem; color: var(--muted); line-height: 1.7; margin-bottom: 1.5rem; font-style: italic; }
+.review-author { font-weight: 600; font-size: 0.85rem; }
+.review-source { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; }
+.review-quote {
+  position: absolute; top: 1.5rem; right: 1.5rem;
+  font-size: 3rem; color: var(--gold); opacity: 0.15;
+  font-family: 'Playfair Display', serif; line-height: 1;
+}
+
+/* CONTATTI */
+.contact-section { background: var(--dark2); }
+.contact-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
+.contact-section .section-title { color: white; }
+.contact-section .section-sub { color: rgba(255,255,255,0.45); }
+
+.contact-info { margin-top: 2.5rem; display: flex; flex-direction: column; gap: 1.5rem; }
+.contact-info-item { display: flex; gap: 1rem; align-items: flex-start; }
+.ci-icon { width: 44px; height: 44px; background: rgba(184,134,11,0.15); border: 1px solid rgba(184,134,11,0.2); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+.ci-text h4 { color: white; font-weight: 600; font-size: 0.9rem; margin-bottom: 0.2rem; }
+.ci-text p { color: rgba(255,255,255,0.45); font-size: 0.85rem; line-height: 1.5; }
+
+.orari { margin-top: 2rem; border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
+.orari-row { display: flex; justify-content: space-between; padding: 0.9rem 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.orari-row:last-child { border-bottom: none; }
+.orari-day { color: rgba(255,255,255,0.5); font-size: 0.85rem; }
+.orari-time { color: var(--gold-light); font-size: 0.85rem; font-weight: 500; }
+.orari-closed { color: rgba(255,255,255,0.25); font-size: 0.85rem; }
+
+.contact-form { display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.form-input, .form-textarea {
+  width: 100%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 4px;
+  padding: 0.9rem 1.1rem;
+  color: white;
+  font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+  outline: none; transition: border-color 0.2s;
+}
+.form-input::placeholder, .form-textarea::placeholder { color: rgba(255,255,255,0.25); }
+.form-input:focus, .form-textarea:focus { border-color: var(--gold); }
+.form-textarea { min-height: 120px; resize: vertical; }
+.form-btn {
+  background: var(--gold); color: white; border: none;
+  padding: 1rem; border-radius: 4px;
+  font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  cursor: pointer; transition: background 0.2s;
+}
+.form-btn:hover { background: var(--gold-light); }
+
+/* FOOTER */
+footer { background: var(--dark); padding: 3rem; border-top: 1px solid rgba(255,255,255,0.07); }
+.footer-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem; }
+.footer-logo { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: white; }
+.footer-logo em { color: var(--gold-light); font-style: normal; }
+.footer-links { display: flex; gap: 2rem; }
+.footer-links a { color: rgba(255,255,255,0.4); text-decoration: none; font-size: 0.82rem; transition: color 0.2s; }
+.footer-links a:hover { color: var(--gold-light); }
+.footer-copy { color: rgba(255,255,255,0.2); font-size: 0.78rem; width: 100%; text-align: center; margin-top: 0.5rem; }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  nav { padding: 1rem 1.5rem; }
+  nav.scrolled { padding: 0.8rem 1.5rem; }
+  .nav-links { display: none; }
+  section { padding: 4rem 1.5rem; }
+  .about-grid, .contact-inner { grid-template-columns: 1fr; gap: 3rem; }
+  .about-img-small { display: none; }
+  .about-badge { left: 0; top: 1rem; }
+  .stats-row { grid-template-columns: repeat(2,1fr); }
+  .menu-grid { grid-template-columns: 1fr; }
+  .menu-item:nth-child(even) { border-right: 1px solid rgba(255,255,255,0.07); }
+  .reviews-grid { grid-template-columns: 1fr; }
+  .gallery-grid { grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3,160px); }
+  .gallery-item:nth-child(1) { grid-column: 1/2; grid-row: 1/2; }
+  .gallery-item:nth-child(2) { grid-column: 2/3; grid-row: 1/2; }
+  .gallery-item:nth-child(3) { grid-column: 1/3; grid-row: 2/3; }
+  .gallery-item:nth-child(4) { grid-column: 1/2; grid-row: 3/4; }
+  .gallery-item:nth-child(5) { grid-column: 2/3; grid-row: 3/4; }
+  .form-row { grid-template-columns: 1fr; }
+  .strip { gap: 1rem; padding: 1rem; }
+  .footer-inner { flex-direction: column; align-items: flex-start; }
+}
+</style>
+</head>
+<body>
+
+<!-- DEMO BADGE -->
+<a href="configuratore.html" class="demo-badge">
+  ← Torna al <span>Configuratore</span>
+</a>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-logo">La <em>Terrazza</em></div>
+  <div class="nav-links">
+    <a href="#chi-siamo">Chi siamo</a>
+    <a href="#menu">Menu</a>
+    <a href="#galleria">Galleria</a>
+    <a href="#contatti">Contatti</a>
+  </div>
+  <a href="#contatti" class="nav-cta">Prenota un tavolo</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-slides">
+    <div class="hero-slide slide-1 active"></div>
+    <div class="hero-slide slide-2"></div>
+    <div class="hero-slide slide-3"></div>
+    <div class="slide-overlay"></div>
+    <div class="hero-food-visual"><div class="food-circle">🍽</div></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Ristorante · Cucina Italiana</div>
+    <h1>Sapori autentici,<br><em>momenti eterni</em></h1>
+    <p class="hero-sub">Un viaggio gastronomico tra la tradizione della cucina italiana e l'innovazione contemporanea. Ogni piatto è una storia da gustare.</p>
+    <div class="hero-btns">
+      <a href="#contatti" class="btn-gold">Prenota un tavolo</a>
+      <a href="#menu" class="btn-outline-white">Scopri il menu</a>
+    </div>
+  </div>
+  <div class="hero-indicators">
+    <div class="indicator active" onclick="goSlide(0)"></div>
+    <div class="indicator" onclick="goSlide(1)"></div>
+    <div class="indicator" onclick="goSlide(2)"></div>
+  </div>
+</section>
+
+<!-- STRIP -->
+<div class="strip">
+  <span class="strip-item">🍝 Cucina Tradizionale</span>
+  <span class="strip-dot">✦</span>
+  <span class="strip-item">🍷 Vini Selezionati</span>
+  <span class="strip-dot">✦</span>
+  <span class="strip-item">🌿 Ingredienti Freschi</span>
+  <span class="strip-dot">✦</span>
+  <span class="strip-item">👨‍🍳 Chef Stellato</span>
+  <span class="strip-dot">✦</span>
+  <span class="strip-item">📍 Torino, Italia</span>
+</div>
+
+<!-- CHI SIAMO -->
+<section class="about" id="chi-siamo">
+  <div class="about-grid">
+    <div class="about-visual">
+      <div class="about-badge">
+        <div class="num">25</div>
+        <div class="label">Anni di esperienza</div>
+      </div>
+      <div class="about-img-main">🍽</div>
+      <div class="about-img-small">🌿</div>
+    </div>
+    <div>
+      <div class="section-eyebrow">Chi siamo</div>
+      <h2 class="section-title">Benvenuti nel nostro ristorante</h2>
+      <p class="section-sub">Da 25 anni portiamo in tavola il meglio della tradizione culinaria italiana, reinterpretata con passione e creatività dallo Chef Marco Bianchi. Ogni piatto racconta la storia del nostro territorio.</p>
+      <div class="about-features">
+        <div class="about-feature">
+          <div class="about-feature-icon">🌾</div>
+          <div class="about-feature-text">
+            <h4>Ingredienti a km 0</h4>
+            <p>Collaboriamo con produttori locali per garantire la massima freschezza e qualità.</p>
+          </div>
+        </div>
+        <div class="about-feature">
+          <div class="about-feature-icon">🍷</div>
+          <div class="about-feature-text">
+            <h4>Cantina Curata</h4>
+            <p>Oltre 200 etichette selezionate da sommelier certificati, tra grandi cru e piccole aziende.</p>
+          </div>
+        </div>
+        <div class="about-feature">
+          <div class="about-feature-icon">👨‍🍳</div>
+          <div class="about-feature-text">
+            <h4>Team Appassionato</h4>
+            <p>Uno staff di professionisti che mette il cuore in ogni piatto e in ogni servizio.</p>
+          </div>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-item"><div class="stat-num">3k+</div><div class="stat-label">Clienti felici</div></div>
+        <div class="stat-item"><div class="stat-num">87%</div><div class="stat-label">Ingredienti bio</div></div>
+        <div class="stat-item"><div class="stat-num">35+</div><div class="stat-label">Chef esperti</div></div>
+        <div class="stat-item"><div class="stat-num">4</div><div class="stat-label">Premi vinti</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MENU -->
+<section class="menu-section" id="menu">
+  <div class="menu-inner">
+    <div class="section-eyebrow" style="color:var(--gold-light)">Il nostro menu</div>
+    <h2 class="section-title">Specialità del giorno</h2>
+    <p class="section-sub">Un menu che cambia con le stagioni, sempre fedele alla tradizione.</p>
+
+    <div class="menu-tabs">
+      <div class="menu-tab active" onclick="switchTab('antipasti', this)">Antipasti</div>
+      <div class="menu-tab" onclick="switchTab('primi', this)">Primi</div>
+      <div class="menu-tab" onclick="switchTab('secondi', this)">Secondi</div>
+      <div class="menu-tab" onclick="switchTab('dolci', this)">Dolci</div>
+      <div class="menu-tab" onclick="switchTab('vini', this)">Vini</div>
+    </div>
+
+    <div id="antipasti" class="menu-panel active">
+      <div class="menu-grid">
+        <div class="menu-item"><div class="menu-item-left"><h4>Carpaccio di Manzo</h4><p>Rucola selvatica, grana padano, limone siciliano e olio EVO</p></div><div class="menu-item-price">€18</div></div>
+        <div class="menu-item"><div class="menu-item-left"><h4>Burrata Pugliese</h4><p>Pomodori datterini arrosto, pesto di basilico fresco</p></div><div class="menu-item-price">€16</div></div>
+        <div class="menu-item"><div class="menu-item-left"><h4>Tartare di Tonno</h4><p>Avocado, sesamo tostato, salsa ponzu, lime</p></div><div class="menu-item-price">€22</div></div>
+        <div class="menu-item"><div class="menu-item-left"><h4>Supplì al Telefono</h4><p>Riso carnaroli, ragù di cinghiale, mozzarella fior di latte</p></div><div class="menu-item-price">€12</div></div>
+        <div class="menu-item"><div class="menu-item-left"><h4>Polpo alla Griglia</h4><p>Patate viola schiacciate, paprika affumicata, prezzemolo</p></div><div class="menu-item-price">€24</div></div>
+        <div class="menu-item"><div class="menu-item-left"><h4>Crudités di Stagione</h4><p>Verdure fresche di stagione, bagna cauda piemontese</p></div><div class="menu-item-price">€14</div></div>
+      </div>
+    </div>
+
+    <div id="primi" class="menu-panel">
+      <div class="menu-grid">
+        <div class="menu-item"><div class="menu-item-left"><h4>Tagliolini al Tartufo</h4><p>Pasta fresca, tartufo nero di Norcia, burro fuso, parmigiano 36 mesi</p></div><div class="menu-item-price">€32</div></div>
+        <div class="menu-item"><div class="menu-item-left"><h4>Risotto alla Milanese</h4><p>Carnaroli, zafferano DOP, ossobuco fondente, gremolada</p></div><div class="menu-item-price">€28</div></div>
+        <div class="menu-item"><div class="menu-item-left"><h4>Pappardelle al Cinghiale</h4><p>Pasta tirata a mano, ragù di cinghiale toscano, rosmarino</p></div><div class="menu-item-price">€24</div></div>
+        <div class="menu-item"><div class="menu-item-left"><h4>Spaghetti alle Vongole</h4><p>Vongole veraci, aglio, prezzemolo, bottarga di muggine</p></div><div class="menu-item-price">€26</div></div>
+        <div class="menu-item"><div class="menu-item-left"><h4>Gnocchi di Patate</h4><p>Ragù di agnello, pecorino romano, menta fresca</p></div><div class="menu-item-price">€22</div></div>
+        <div class="menu-item"><div class="menu-item-left"><h4>Linguine all'Astice</h4><p>Astice bretone, pomodorini del Vesuvio, basilico, olio EVO</p></div><div class="menu-item-price">€38</div></div>
+      </div>
+    </div>
+
+    <div id="secondi" class="menu-panel">
+      <div class="menu-grid">
+        <div class="menu-item"><div class="menu-item-left"><h4>Bistecca alla Fiorentina</h4><p>Chianina IGP, 45 giorni di frollatura, sal grosso, rosmarino (1kg)</p></div><div class="menu-item-price">€85</div></div>
+        <div class="menu-item"><div class="menu-item-left"><h4>Branzino al Sale</h4><p>Branzino selvaggio, erbe aromatiche, olio EVO siciliano, limone</p></div><div class="menu-item-price">€36</div></div>
+        <div class="menu-item"><div class="menu-item-left"><h4>Agnello in Crosta</h4><p>Cosciotto d'agnello, crosta di pistacchi, jus al rosmarino</p></div><div class="menu-item-price">€42</div></div>
+        <div class="menu-item"><div class="menu-item-left"><h4>Scaloppine al Limone</h4><p>Vitello piemontese, sfumato al vino bianco, capperi di Pantelleria</p></div><div class="menu-item-price">€28</div></div>
+      </div>
+    </div>
+
+    <div id="dolci" class="menu-panel">
+      <div class="menu-grid">
+        <div class="menu-item"><div class="menu-item-left"><h4>Tiramisù Classico</h4><p>Mascarpone, savoiardi, caffè espresso, cacao amaro</p></div><div class="menu-item-price">€12</div></div>
+        <div class="menu-item"><div class="menu-item-left"><h4>Panna Cotta al Miele</h4><p>Miele di acacia piemontese, frutti di bosco freschi</p></div><div class="menu-item-price">€10</div></div>
+        <div class="menu-item"><div class="menu-item-left"><h4>Soufflé al Cioccolato</h4><p>Fondente 72%, cuore morbido, gelato alla vaniglia Bourbon</p></div><div class="menu-item-price">€16</div></div>
+        <div class="menu-item"><div class="menu-item-left"><h4>Cannolo Siciliano</h4><p>Ricotta di pecora, pistacchi di Bronte, scorza d'arancio candita</p></div><div class="menu-item-price">€11</div></div>
+      </div>
+    </div>
+
+    <div id="vini" class="menu-panel">
+      <div class="menu-grid">
+        <div class="menu-item"><div class="menu-item-left"><h4>Barolo DOCG 2018</h4><p>Nebbiolo, Langhe. Note di rosa, tabacco e ciliegia matura</p></div><div class="menu-item-price">€85</div></div>
+        <div class="menu-item"><div class="menu-item-left"><h4>Brunello di Montalcino</h4><p>Sangiovese Grosso. Struttura importante, tannini eleganti</p></div><div class="menu-item-price">€110</div></div>
+        <div class="menu-item"><div class="menu-item-left"><h4>Franciacorta Satèn DOCG</h4><p>Chardonnay. Bollicine fini, freschezza, note di frutta tropicale</p></div><div class="menu-item-price">€65</div></div>
+        <div class="menu-item"><div class="menu-item-left"><h4>Vermentino di Sardegna</h4><p>Fresco e minerale. Perfetto con pesce e antipasti</p></div><div class="menu-item-price">€42</div></div>
+        <div class="menu-item"><div class="menu-item-left"><h4>Amarone della Valpolicella</h4><p>Corvina, Rondinella. Corposo, vellutato, persistente</p></div><div class="menu-item-price">€95</div></div>
+        <div class="menu-item"><div class="menu-item-left"><h4>Prosecco Superiore DOCG</h4><p>Glera extra dry. Aperitivo ideale, freschezza e perlage</p></div><div class="menu-item-price">€38</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERIA -->
+<section class="gallery-section" id="galleria">
+  <div class="gallery-inner">
+    <div class="section-eyebrow">Galleria</div>
+    <h2 class="section-title">I nostri piatti</h2>
+    <p class="section-sub">La bellezza prima ancora del sapore — ma poi entrambi ti conquistano.</p>
+    <div class="gallery-grid">
+      <div class="gallery-item">🍝</div>
+      <div class="gallery-item">🥩</div>
+      <div class="gallery-item">🍷</div>
+      <div class="gallery-item">🦞</div>
+      <div class="gallery-item">🍮</div>
+    </div>
+  </div>
+</section>
+
+<!-- RECENSIONI -->
+<section class="reviews-section" id="recensioni">
+  <div class="reviews-inner">
+    <div class="section-eyebrow">Testimonianze</div>
+    <h2 class="section-title">Cosa dicono i nostri ospiti</h2>
+    <div class="reviews-grid">
+      <div class="review-card">
+        <div class="review-quote">"</div>
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">Un'esperienza gastronomica indimenticabile. Il tartufo sui tagliolini era straordinario, e l'accoglienza del personale ha reso la serata perfetta.</p>
+        <div class="review-author">Marco B.</div>
+        <div class="review-source">Google Reviews · Febbraio 2025</div>
+      </div>
+      <div class="review-card">
+        <div class="review-quote">"</div>
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">La bistecca alla Fiorentina è la migliore che io abbia mai mangiato. Abbinata al Barolo consigliato dal sommelier — semplicemente perfetto.</p>
+        <div class="review-author">Giulia R.</div>
+        <div class="review-source">TripAdvisor · Gennaio 2025</div>
+      </div>
+      <div class="review-card">
+        <div class="review-quote">"</div>
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">Ceniamo qui ogni anniversario. L'atmosfera è romantica, il menu sempre sorprendente. Il nostro ristorante del cuore a Torino.</p>
+        <div class="review-author">Veronica & Luca</div>
+        <div class="review-source">Google Reviews · Dicembre 2024</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTATTI -->
+<section class="contact-section" id="contatti">
+  <div class="contact-inner">
+    <div>
+      <div class="section-eyebrow" style="color:var(--gold-light)">Prenota</div>
+      <h2 class="section-title">Il tuo tavolo ti aspetta</h2>
+      <p class="section-sub">Prenota con anticipo per garantirti il miglior tavolo. Siamo lieti di soddisfare ogni esigenza.</p>
+
+      <div class="contact-info">
+        <div class="contact-info-item">
+          <div class="ci-icon">📍</div>
+          <div class="ci-text"><h4>Indirizzo</h4><p>Via Roma 46, Torino (TO)</p></div>
+        </div>
+        <div class="contact-info-item">
+          <div class="ci-icon">📞</div>
+          <div class="ci-text"><h4>Telefono</h4><p>+39 011 123 4567</p></div>
+        </div>
+        <div class="contact-info-item">
+          <div class="ci-icon">✉️</div>
+          <div class="ci-text"><h4>Email</h4><p>info@laterrazza.it</p></div>
+        </div>
+      </div>
+
+      <div class="orari">
+        <div class="orari-row"><span class="orari-day">Lunedì – Venerdì</span><span class="orari-time">12:00 – 15:00 · 19:00 – 23:00</span></div>
+        <div class="orari-row"><span class="orari-day">Sabato</span><span class="orari-time">12:00 – 15:30 · 19:00 – 23:30</span></div>
+        <div class="orari-row"><span class="orari-day">Domenica</span><span class="orari-time">12:00 – 16:00</span></div>
+      </div>
+    </div>
+
+    <div>
+      <p style="color:rgba(255,255,255,0.45);font-size:0.78rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.5rem">PRENOTA UN TAVOLO</p>
+      <div class="contact-form">
+        <div class="form-row">
+          <input class="form-input" type="text" placeholder="Nome">
+          <input class="form-input" type="text" placeholder="Cognome">
+        </div>
+        <input class="form-input" type="email" placeholder="Email">
+        <input class="form-input" type="tel" placeholder="Telefono">
+        <div class="form-row">
+          <input class="form-input" type="date" placeholder="Data">
+          <input class="form-input" type="time" placeholder="Orario">
+        </div>
+        <input class="form-input" type="number" placeholder="Numero di persone" min="1">
+        <textarea class="form-textarea" placeholder="Richieste particolari (allergie, occasioni speciali...)"></textarea>
+        <button class="form-btn">Prenota ora</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">La <em>Terrazza</em></div>
+    <div class="footer-links">
+      <a href="#chi-siamo">Chi siamo</a>
+      <a href="#menu">Menu</a>
+      <a href="#galleria">Galleria</a>
+      <a href="#contatti">Contatti</a>
+      <a href="#">Privacy Policy</a>
+    </div>
+  </div>
+  <p class="footer-copy">© 2025 La Terrazza Ristorante — Tutti i diritti riservati</p>
+</footer>
+
+<script>
+// NAV scroll
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// Hero slider
+let current = 0;
+const slides = document.querySelectorAll('.hero-slide');
+const indicators = document.querySelectorAll('.indicator');
+
+function goSlide(n) {
+  slides[current].classList.remove('active');
+  indicators[current].classList.remove('active');
+  current = n;
+  slides[current].classList.add('active');
+  indicators[current].classList.add('active');
+}
+
+setInterval(() => { goSlide((current + 1) % slides.length); }, 5000);
+
+// Menu tabs
+function switchTab(id, el) {
+  document.querySelectorAll('.menu-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.menu-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+}
+</script>
+</body>
+</html>
